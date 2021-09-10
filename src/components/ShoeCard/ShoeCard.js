@@ -29,18 +29,39 @@ const ShoeCard = ({
     ? 'on-sale'
     : isNewShoe(releaseDate)
       ? 'new-release'
-      : 'default'
+      : 'default';
+
+  const STYLES = {
+    'on-sale': {
+      text: 'Sale',
+      color: COLORS.primary,
+    },
+    'new-release': {
+      text: 'Just Released!',
+      color: COLORS.secondary
+    }
+  }
 
   return (
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
         <ImageWrapper>
+          {STYLES[variant] &&
+            <Detail style={{'--color': `${STYLES[variant].color}`}}>
+              {STYLES[variant].text}
+            </Detail>
+          }
           <Image alt="" src={imageSrc} />
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <PriceWrapper>
+            <Price style={{'--text-decoration': `${variant === 'on-sale' ? 'line-through' : 'none'}`}}>
+              {formatPrice(price)}
+            </Price>
+            {variant === 'on-sale' && <SalePrice>{formatPrice(salePrice)}</SalePrice>}
+          </PriceWrapper>
         </Row>
         <Row>
           <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
@@ -53,26 +74,43 @@ const ShoeCard = ({
 const Link = styled.a`
   text-decoration: none;
   color: inherit;
+  flex: 1 1 260px;
+  max-width: 340px;
 `;
 
-const Wrapper = styled.article``;
+const Wrapper = styled.article`
+  margin: 31px 16px;
+`;
 
 const ImageWrapper = styled.div`
   position: relative;
 `;
 
-const Image = styled.img``;
+const Image = styled.img`
+  width: 100%;
+`;
 
 const Row = styled.div`
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const Name = styled.h3`
   font-weight: ${WEIGHTS.medium};
   color: ${COLORS.gray[900]};
+  max-width: 80%;
 `;
 
-const Price = styled.span``;
+const PriceWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: relative;
+`
+
+const Price = styled.span`
+  text-decoration: var(--text-decoration);
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
@@ -81,6 +119,21 @@ const ColorInfo = styled.p`
 const SalePrice = styled.span`
   font-weight: ${WEIGHTS.medium};
   color: ${COLORS.primary};
+  position: absolute;
+  top: 24px;
+`;
+
+const Detail = styled.div`
+  position: absolute;
+  top: 8px;
+  right: -4px;
+  border-radius: 2px;
+  width: fit-content;
+  padding: 6px 9px;
+  background: var(--color);
+  color: ${COLORS.white};
+  font-size: 0.75rem;
+  font-weight: ${WEIGHTS.bold};
 `;
 
 export default ShoeCard;
